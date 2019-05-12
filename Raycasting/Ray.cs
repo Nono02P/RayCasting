@@ -17,6 +17,7 @@ namespace Raycasting
         public Color Color { get; set; } = Color.White;
         public int Thickness { get; set; } = 1;
         public float Angle { get { return (float)Math.Atan2(Direction.Y, Direction.X); } set { Direction = new Vector2((float)Math.Cos(value), (float)Math.Sin(value)); } }
+        public float Alpha { get; set; }
         #endregion Propriétés
 
         #region Constructeur
@@ -84,9 +85,9 @@ namespace Raycasting
                 Vector2? point = Intersection(w);
                 if (point.HasValue)
                 {
-                    Vector2 dif = point.Value - Position;
                     if (_intersection.HasValue)
                     {
+                        Vector2 dif = point.Value - Position;
                         Vector2 dif2 = _intersection.Value - Position;
                         if (dif.Length() < dif2.Length())
                             _intersection = point;
@@ -101,12 +102,12 @@ namespace Raycasting
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            spriteBatch.DrawCircle(Position, Thickness + 2, 10, Color, Thickness + 2);
+            //spriteBatch.DrawCircle(Position, Thickness + 2, 10, Color, Thickness + 2);
             spriteBatch.DrawLine(Position, Position + Direction, Color, Thickness);
             if (_intersection.HasValue)
             {
-                spriteBatch.DrawLine(Position + Direction, _intersection.Value, Color.Red, Thickness);
-                spriteBatch.DrawCircle(_intersection.Value, Thickness + 2, 10, Color.Red, Thickness + 2);
+                spriteBatch.DrawLine(Position + Direction, _intersection.Value, Color.White * Alpha, Thickness);
+                //spriteBatch.DrawCircle(_intersection.Value, Thickness + 2, 10, Color.Red, Thickness + 2);
             }
         }
     }

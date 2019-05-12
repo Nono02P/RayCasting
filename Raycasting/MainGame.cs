@@ -12,7 +12,7 @@ namespace Raycasting
     public class MainGame : Game
     {
         private List<Boundary> _boundaries;
-        private Particle _particle;
+        private RayViewer _particle;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -46,6 +46,12 @@ namespace Raycasting
             _boundaries = new List<Boundary>();
             int width = GraphicsDevice.Viewport.Width;
             int height = GraphicsDevice.Viewport.Height;
+
+            _boundaries.Add(new Boundary(Vector2.Zero, new Vector2(width, 0)));
+            _boundaries.Add(new Boundary(Vector2.Zero, new Vector2(0, height)));
+            _boundaries.Add(new Boundary(new Vector2(width, 0), new Vector2(width, height)));
+            _boundaries.Add(new Boundary(new Vector2(0, height), new Vector2(width, height)));
+
             Random rnd = new Random();
             for (int i = 0; i < 7; i++)
             {
@@ -55,7 +61,8 @@ namespace Raycasting
                 int y2 = (int)(rnd.NextDouble() * height);
                 _boundaries.Add(new Boundary(new Vector2(x1, y1), new Vector2(x2, y2)));
             }
-            _particle = new Particle(new Vector2(100,200), -22, 23, 1);
+            _particle = new RayViewer(new Vector2(100, 200), 0, 360, 0.1f, .03f);
+            //_particle = new Particle(new Vector2(100, 200), -22, 23, 1);
         }
 
         /// <summary>
@@ -73,9 +80,9 @@ namespace Raycasting
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            
             KeyboardState kb = Keyboard.GetState();
-
+            
             float x = _particle.Position.X;
             float y = _particle.Position.Y;
             if (kb.IsKeyDown(Keys.Left))
