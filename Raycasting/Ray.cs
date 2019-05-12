@@ -12,22 +12,27 @@ namespace Raycasting
         #endregion Variables privées
 
         #region Propriétés
+        public RayViewer Parent { get; private set; }
         public Vector2 Position { get; set; }
         public Vector2 Direction { get; set; } = Vector2.UnitX;
         public Color Color { get; set; } = Color.White;
+        public float ClosestDistance { get; private set; }
+        public Color WallColor { get; set; }
         public int Thickness { get; set; } = 1;
         public float Angle { get { return (float)Math.Atan2(Direction.Y, Direction.X); } set { Direction = new Vector2((float)Math.Cos(value), (float)Math.Sin(value)); } }
         public float Alpha { get; set; }
         #endregion Propriétés
 
         #region Constructeur
-        public Ray(Vector2 pPosition)
+        public Ray(RayViewer pParent, Vector2 pPosition)
         {
+            Parent = pParent;
             Position = pPosition;
         }
 
-        public Ray(Vector2 pPosition, float pAngle)
+        public Ray(RayViewer pParent, Vector2 pPosition, float pAngle)
         {
+            Parent = pParent;
             Position = pPosition;
             Direction = new Vector2((float)Math.Cos(pAngle) * 10, (float)Math.Sin(pAngle) * 10);
         }
@@ -40,7 +45,7 @@ namespace Raycasting
 
         private Vector2? Intersection(Boundary pWall)
         {
-            /*
+            /* t = wall u = rayon
             * t =   (x1-x3) * (y3-y4) - (y1-y3) * (x3-x4)
             *       _____________________________________
             *       (x1-x2) * (y3-y4) - (y1-y2) * (x3-x4)
@@ -79,6 +84,7 @@ namespace Raycasting
         public void Update(GameTime gameTime, List<Boundary> pWalls)
         {
             _intersection = null;
+            ClosestDistance = float.PositiveInfinity;
             for (int i = 0; i < pWalls.Count; i++)
             {
                 Boundary w = pWalls[i];
@@ -88,13 +94,22 @@ namespace Raycasting
                     if (_intersection.HasValue)
                     {
                         Vector2 dif = point.Value - Position;
-                        Vector2 dif2 = _intersection.Value - Position;
-                        if (dif.Length() < dif2.Length())
+                        float distance = dif.Length();
+                        distance *= (float)Math.Cos(Angle - Parent.Angle);
+                        Vector2 closestDif = _intersection.Value - Position;
+                        if (distance < closestDif.Length())
+                        {
                             _intersection = point;
+                            ClosestDistance = distance;
+                            WallColor = w.Color;
+                        }
                     }
                     else
                     {
                         _intersection = point;
+                        Vector2 dif = point.Value - Position;
+                        float distance = dif.Length();
+                        WallColor = w.Color;
                     }
                 }
             }
@@ -102,13 +117,8 @@ namespace Raycasting
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            //spriteBatch.DrawCircle(Position, Thickness + 2, 10, Color, Thickness + 2);
-            spriteBatch.DrawLine(Position, Position + Direction, Color, Thickness);
             if (_intersection.HasValue)
-            {
-                spriteBatch.DrawLine(Position + Direction, _intersection.Value, Color.White * Alpha, Thickness);
-                //spriteBatch.DrawCircle(_intersection.Value, Thickness + 2, 10, Color.Red, Thickness + 2);
-            }
+                spriteBatch.DrawLine(Position + Direction, _intersection.Value, Color * Alpha, Thickness);
         }
     }
 }

@@ -12,7 +12,9 @@ namespace Raycasting
     public class MainGame : Game
     {
         private List<Boundary> _boundaries;
-        private RayViewer _particle;
+        private RayViewer _rayViewer;
+        private int _width;
+        private int _height;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -44,25 +46,33 @@ namespace Raycasting
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _boundaries = new List<Boundary>();
-            int width = GraphicsDevice.Viewport.Width;
-            int height = GraphicsDevice.Viewport.Height;
 
-            _boundaries.Add(new Boundary(Vector2.Zero, new Vector2(width, 0)));
-            _boundaries.Add(new Boundary(Vector2.Zero, new Vector2(0, height)));
-            _boundaries.Add(new Boundary(new Vector2(width, 0), new Vector2(width, height)));
-            _boundaries.Add(new Boundary(new Vector2(0, height), new Vector2(width, height)));
+            _width = GraphicsDevice.Viewport.Width / 2;
+            _height = GraphicsDevice.Viewport.Height;
+
+            _boundaries.Add(new Boundary(Vector2.Zero, new Vector2(_width, 0)));
+            _boundaries.Add(new Boundary(Vector2.Zero, new Vector2(0, _height)));
+            _boundaries.Add(new Boundary(new Vector2(_width, 0), new Vector2(_width, _height)));
+            _boundaries.Add(new Boundary(new Vector2(0, _height), new Vector2(_width, _height)));
 
             Random rnd = new Random();
             for (int i = 0; i < 7; i++)
             {
-                int x1 = (int)(rnd.NextDouble() * width);
-                int y1 = (int)(rnd.NextDouble() * height);
-                int x2 = (int)(rnd.NextDouble() * width);
-                int y2 = (int)(rnd.NextDouble() * height);
-                _boundaries.Add(new Boundary(new Vector2(x1, y1), new Vector2(x2, y2)));
+                int x1 = (int)(rnd.NextDouble() * _width);
+                int y1 = (int)(rnd.NextDouble() * _height);
+                int x2 = (int)(rnd.NextDouble() * _width);
+                int y2 = (int)(rnd.NextDouble() * _height);
+                int red = (int)(rnd.NextDouble() * 255);
+                int green = (int)(rnd.NextDouble() * 255);
+                int blue = (int)(rnd.NextDouble() * 255);
+                _boundaries.Add(new Boundary(new Vector2(x1, y1), new Vector2(x2, y2)) { Color = new Color(red, green, blue) });
             }
-            _particle = new RayViewer(new Vector2(100, 200), 0, 360, 0.1f, .03f);
-            //_particle = new Particle(new Vector2(100, 200), -22, 23, 1);
+            //_rayViewer = new RayViewer(new Vector2(100, 200), 0, 360, 0.1f, Color.White, .03f)
+            _rayViewer = new RayViewer(new Vector2(100, 200), -30, 30, .1f, Color.White, .03f)
+            {
+                Draw3D = true,
+                Area3D = new Rectangle(_width, 0, _width, _height)
+            };
         }
 
         /// <summary>
@@ -83,8 +93,8 @@ namespace Raycasting
             
             KeyboardState kb = Keyboard.GetState();
             
-            float x = _particle.Position.X;
-            float y = _particle.Position.Y;
+            float x = _rayViewer.Position.X;
+            float y = _rayViewer.Position.Y;
             if (kb.IsKeyDown(Keys.Left))
                 x--;
             if (kb.IsKeyDown(Keys.Right))
@@ -94,11 +104,14 @@ namespace Raycasting
             if (kb.IsKeyDown(Keys.Down))
                 y++;
 
-            _particle.Position = new Vector2(x, y);
-            //_particle.LookAt(Mouse.GetState().Position.ToVector2());
-            Vector2 dir = (Mouse.GetState().Position.ToVector2() - _particle.Position);
-            _particle.Angle = (float)Math.Atan2(dir.Y, dir.X);
-            _particle.Update(gameTime, _boundaries);
+            x = MathHelper.Clamp(x, 0, _width);
+            y = MathHelper.Clamp(y, 0, _height);
+
+            _rayViewer.Position = new Vector2(x, y);
+
+            Vector2 dir = (Mouse.GetState().Position.ToVector2() - _rayViewer.Position);
+            _rayViewer.Angle = (float)Math.Atan2(dir.Y, dir.X);
+            _rayViewer.Update(gameTime, _boundaries);
 
             base.Update(gameTime);
         }
@@ -117,7 +130,7 @@ namespace Raycasting
                 Boundary b = _boundaries[i];
                 b.Draw(spriteBatch, gameTime);
             }
-            _particle.Draw(spriteBatch, gameTime);
+            _rayViewer.Draw(spriteBatch, gameTime);
             spriteBatch.End();
 
             base.Draw(gameTime);
