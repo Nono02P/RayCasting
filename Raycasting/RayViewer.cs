@@ -72,14 +72,14 @@ namespace Raycasting
             Alpha = pAlpha;
         }
 
-        private double MapValue(double a, double a0, double a1, double b0, double b1, bool pWithClamp = true)
+        /*private double MapValue(double a, double a0, double a1, double b0, double b1, bool pWithClamp = true)
         {
             double val = a;
             if (pWithClamp)
                 val = MathHelper.Clamp((float)a, (float)a0, (float)a1);
 
             return b0 + (b1 - b0) * ((val - a0) / (a1 - a0));
-        }
+        }*/
 
         public void Update(GameTime gameTime, List<Boundary> pWalls)
         {
@@ -97,8 +97,8 @@ namespace Raycasting
                 if (Draw3D)
                 {
                     float w = Area3D.Width / nbRays;
-                    float brightness = (float)MapValue(Math.Pow(r.ClosestDistance, 2), 0, Math.Pow(Area3D.Width, 2), 1, 0);// * .5f;
-                    int h = (int)MapValue(r.ClosestDistance, 0, Area3D.Width, Area3D.Height, 0);
+                    float brightness = (float)utils.MapValue(Math.Pow(r.ClosestDistance, 2), 0, Math.Pow(Area3D.Width, 2), 1, 0);// * .5f;
+                    int h = (int)utils.MapValue(r.ClosestDistance, 0, Area3D.Width, Area3D.Height, 0);
                     Color col = r.WallColor * brightness;
                     spriteBatch.DrawRectangle(new Rectangle(Area3D.Width + (int)(i * w + w), (Area3D.Height - h) / 2, (int)w, h), new Color(col, 1f));
                     spriteBatch.FillRectangle(new Rectangle(Area3D.Width + (int)(i * w + w), (Area3D.Height - h) / 2, (int)w, h), new Color(col, 1f));

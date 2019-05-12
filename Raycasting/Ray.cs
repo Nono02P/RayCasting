@@ -45,11 +45,12 @@ namespace Raycasting
 
         private Vector2? Intersection(Boundary pWall)
         {
-            /* t = wall u = rayon
+            /* t => wall
             * t =   (x1-x3) * (y3-y4) - (y1-y3) * (x3-x4)
             *       _____________________________________
             *       (x1-x2) * (y3-y4) - (y1-y2) * (x3-x4)
             * 
+            * u => ray
             * u = - (x1-x2) * (y1-y3) - (y1-y2) * (x1-x3)
             *       ______________________________________
             *       (x1-x2) * (y3-y4) - (y1-y2) * (x3-x4)
@@ -95,11 +96,11 @@ namespace Raycasting
                     {
                         Vector2 dif = point.Value - Position;
                         float distance = dif.Length();
-                        distance *= (float)Math.Cos(Angle - Parent.Angle);
                         Vector2 closestDif = _intersection.Value - Position;
                         if (distance < closestDif.Length())
                         {
                             _intersection = point;
+                            distance *= (float)Math.Cos(Angle - Parent.Angle);
                             ClosestDistance = distance;
                             WallColor = w.Color;
                         }
@@ -108,7 +109,6 @@ namespace Raycasting
                     {
                         _intersection = point;
                         Vector2 dif = point.Value - Position;
-                        float distance = dif.Length();
                         WallColor = w.Color;
                     }
                 }
