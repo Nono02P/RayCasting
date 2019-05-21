@@ -54,7 +54,7 @@ namespace Raycasting
             _boundaries.Add(new Boundary(Vector2.Zero, new Vector2(0, _height)));
             _boundaries.Add(new Boundary(new Vector2(_width, 0), new Vector2(_width, _height)));
             _boundaries.Add(new Boundary(new Vector2(0, _height), new Vector2(_width, _height)));
-
+            /*
             Random rnd = new Random();
             for (int i = 0; i < 7; i++)
             {
@@ -67,8 +67,12 @@ namespace Raycasting
                 int blue = (int)(rnd.NextDouble() * 255);
                 _boundaries.Add(new Boundary(new Vector2(x1, y1), new Vector2(x2, y2)) { Color = new Color(red, green, blue) });
             }
+            */
+            _boundaries.Add(new Boundary(new Vector2(100, 100), new Vector2(150, 100)));
+            _boundaries.Add(new Boundary(new Vector2(100, 100), new Vector2(100, 150)));
+            _boundaries.Add(new Boundary(new Vector2(150, 100), new Vector2(100, 150)));
             //_rayViewer = new RayViewer(new Vector2(100, 200), 0, 360, 0.1f, Color.White, .03f)
-            _rayViewer = new RayViewer(new Vector2(100, 200), -30, 30, .1f, Color.White, .03f)
+            _rayViewer = new RayViewer(new Vector2(100, 200), 0, 1, 1f, Color.Red, 1f)
             {
                 Draw3D = true,
                 Area3D = new Rectangle(_width, 0, _width, _height)
@@ -109,7 +113,8 @@ namespace Raycasting
 
             _rayViewer.Position = new Vector2(x, y);
 
-            Vector2 dir = (Mouse.GetState().Position.ToVector2() - _rayViewer.Position);
+            Vector2 dir = new Vector2(_boundaries[6].A.X, _boundaries[6].A.Y) - _rayViewer.Position;
+            //Vector2 dir = (Mouse.GetState().Position.ToVector2() - _rayViewer.Position);
             _rayViewer.Angle = (float)Math.Atan2(dir.Y, dir.X);
             _rayViewer.Update(gameTime, _boundaries);
 

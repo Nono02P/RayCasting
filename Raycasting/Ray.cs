@@ -40,7 +40,7 @@ namespace Raycasting
 
         public void LookAt(Vector2 pDirection)
         {
-            Direction = Vector2.Normalize(pDirection - Position) * 10;
+            Direction = Vector2.Normalize(pDirection - Position);
         }
 
         private Vector2? Intersection(Boundary pWall)
@@ -75,7 +75,7 @@ namespace Raycasting
             {
                 float t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denominator;
                 float u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denominator;
-                if (t > 0 && t < 1 && u > 0)
+                if (t >= 0 && t <= 1 && u >= 0)
                     return new Vector2(x1 + t * (x2 - x1), y1 + t * (y2 - y1));
                 else
                     return null;
